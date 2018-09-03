@@ -43,6 +43,11 @@ io.on('connection', (socket) => {
 
     socket.on('createMessage', (message) => {
         console.log('New message:', message);
+        io.emit('newMessage', {
+            from: message.from,
+            text: message.text,
+            createdAt: new Date().getTime()
+        }); //broadcasting a message. Socket.emit sends to a single open channel, io.emit sends to everyone connected
     });
 });
 
