@@ -1,5 +1,7 @@
 const path = require('path'); //No need to npm i, because it's a built-in module 
 const express = require('express');
+const socketIO = require('socket.io');
+const http = require('http'); //built-in
 
 //console.log(__dirname + '/../public'); //old way to do this
 
@@ -8,12 +10,22 @@ const express = require('express');
 
 const publicPath = path.join(__dirname, '../public');
 var app = express();
+var server = http.createServer(app);
+var io = socketIO(server);
 
 //Set up for heroku deployment
 const port = process.env.PORT || 3000;
 
 app.use(express.static(publicPath));
 
-app.listen(port, () => {
+io.on('connection', (socket) => {
+    console.log('New user connected');
+
+    socket.on('disconnect', () => {
+        console.log('User disconnected');
+    });
+});
+
+server.listen(port, () => {
     console.log(`Server is up on port ${port}`);
-})
+});
