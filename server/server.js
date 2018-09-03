@@ -21,6 +21,18 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
+    socket.emit('newMessage', {
+        from: 'Admin',
+        text: 'Welcome to the chat app! Have fun',
+        createdAt: new Date().getTime()
+    });
+
+    socket.broadcast.emit('newMessage', {
+        from: 'Admin',
+        text: 'New user joined. Say hi!',
+        createdAt: new Date().getTime()
+    });
+
     socket.on('disconnect', () => {
         console.log('User disconnected');
     });
@@ -48,6 +60,11 @@ io.on('connection', (socket) => {
             text: message.text,
             createdAt: new Date().getTime()
         }); //broadcasting a message. Socket.emit sends to a single open channel, io.emit sends to everyone connected
+        // socket.broadcast.emit('newMessage', {
+        //     from: message.from,
+        //     text: message.text,
+        //     createdAt: new Date().getTime()
+        // }); //this emit an event to everyone but the one who has the socket open
     });
 });
 
