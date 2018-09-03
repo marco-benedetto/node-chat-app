@@ -47,7 +47,7 @@ io.on('connection', (socket) => {
     //     createdAt: new Date().getTime()
     // });
 
-    socket.on('createMessage', (message) => {
+    socket.on('createMessage', (message, callback) => {
         console.log('New message:', message);
         io.emit('newMessage', generateMessage(message.from, message.text)); //broadcasting a message. Socket.emit sends to a single open channel, io.emit sends to everyone connected
         // socket.broadcast.emit('newMessage', {
@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
         //     text: message.text,
         //     createdAt: new Date().getTime()
         // }); //this emit an event to everyone but the one who has the socket open
+        callback('This is from the server');
     });
 });
 
