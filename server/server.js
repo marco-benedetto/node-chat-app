@@ -4,6 +4,7 @@ const socketIO = require('socket.io');
 const http = require('http'); //built-in
 
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
 
 //console.log(__dirname + '/../public'); //old way to do this
 
@@ -23,12 +24,19 @@ app.use(express.static(publicPath));
 io.on('connection', (socket) => {
     console.log('New user connected');
 
-    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app! Have fun!'));
-
-    socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined. Say hi!'));
-
     socket.on('disconnect', () => {
         console.log('User disconnected');
+    });
+
+    socket.on('join', (params, callback) => {
+        if(!isRealString(params.name) || !isRealString(params.room)) {
+            callback('Name and room name are required');
+        }
+
+        socket.join(params.room);
+        socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app! Have fun!'));
+        socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined. Say hi!`));
+        callback();
     });
 
     // socket.emit('newEmail', {
